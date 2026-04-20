@@ -15,12 +15,14 @@ class Produto extends Model
         'custo_medio',
         'preco_venda',
         'estoque',
+        'ativo',
     ];
 
     protected $casts = [
         'custo_medio' => 'decimal:2',
         'preco_venda' => 'decimal:2',
         'estoque' => 'integer',
+        'ativo' => 'boolean',
     ];
 
     public function compraItens(): HasMany

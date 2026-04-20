@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getProdutos, criarProduto } from '../services/produtoService'
+import { getProdutos, criarProduto, updateNomeProduto, toggleAtivoProduto } from '../services/produtoService'
 
 export function useProdutos() {
   const produtos = ref([])
@@ -21,5 +21,19 @@ export function useProdutos() {
     return data.data
   }
 
-  return { produtos, loading, carregar, criar }
+  async function editarNome(id, nome) {
+    const { data } = await updateNomeProduto(id, nome)
+    const index = produtos.value.findIndex((p) => p.id === id)
+    if (index !== -1) produtos.value[index] = data.data
+    return data.data
+  }
+
+  async function toggleAtivo(id) {
+    const { data } = await toggleAtivoProduto(id)
+    const index = produtos.value.findIndex((p) => p.id === id)
+    if (index !== -1) produtos.value[index] = data.data
+    return data.data
+  }
+
+  return { produtos, loading, carregar, criar, editarNome, toggleAtivo }
 }

@@ -1,7 +1,8 @@
 <template>
-  <AppLayout>
+  <AppLayout v-if="$route.meta.auth">
     <RouterView />
   </AppLayout>
+  <RouterView v-else />
 </template>
 
 <script setup>

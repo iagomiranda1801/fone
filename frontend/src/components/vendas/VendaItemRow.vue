@@ -6,6 +6,7 @@
       :options="produtoOptions"
       placeholder="Selecione um produto"
       class="flex-1"
+      @update:model-value="onProdutoChange"
     />
     <BaseInput
       v-model="item.quantidade"
@@ -33,10 +34,18 @@ import BaseSelect from '../ui/BaseSelect.vue'
 import BaseInput from '../ui/BaseInput.vue'
 import BaseButton from '../ui/BaseButton.vue'
 
-defineProps({
+const props = defineProps({
   item: { type: Object, required: true },
   produtoOptions: { type: Array, default: () => [] },
+  produtosMap: { type: Object, default: () => ({}) },
 })
 
 defineEmits(['remover'])
+
+function onProdutoChange(produtoId) {
+  const produto = props.produtosMap[produtoId]
+  if (produto) {
+    props.item.preco_unitario = produto.preco_venda
+  }
+}
 </script>

@@ -4,6 +4,7 @@
       v-model="cliente"
       label="Cliente"
       placeholder="Nome do cliente"
+      :error="errors.cliente"
     />
 
     <div class="space-y-3">
@@ -18,12 +19,16 @@
         v-for="(item, index) in items"
         :key="index"
         :item="item"
-        :produto-options="produtoOptions"
+        :produto-options="filteredProdutoOptions(index)"
+        :produtos-map="produtosMap"
         @remover="removerItem(index)"
       />
 
-      <p v-if="items.length === 0" class="text-sm text-gray-500 text-center py-2">
+      <p v-if="items.length === 0 && !errors.itens" class="text-sm text-gray-500 text-center py-2">
         Nenhum item adicionado. Clique em "+ Adicionar Item".
+      </p>
+      <p v-if="errors.itens" class="text-sm text-red-500 text-center py-2 font-medium">
+        {{ errors.itens }}
       </p>
     </div>
 
@@ -36,7 +41,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import { useItemList } from '../../composables/useItemList'
 import BaseInput from '../ui/BaseInput.vue'
 import BaseButton from '../ui/BaseButton.vue'
@@ -50,11 +55,12 @@ const props = defineProps({
 })
 
 const cliente = ref('')
+const errors = reactive({ cliente: '', itens: '' })
 const { items, adicionarItem, removerItem, limpar, total, toPayload } = useItemList()
 
 const produtoOptions = computed(() =>
   props.produtos
-    .filter((p) => p.estoque > 0)
+    .filter((p) => p.estoque > 0 && p.ativo)
     .map((p) => ({ value: p.id, label: `${p.nome} (Estoque: ${p.estoque})` })),
 )
 
@@ -63,6 +69,14 @@ const produtosMap = computed(() => {
   props.produtos.forEach((p) => { map[p.id] = p })
   return map
 })
+
+function filteredProdutoOptions(currentIndex) {
+  const usedIds = items.value
+    .filter((_, i) => i !== currentIndex)
+    .map((item) => item.produto_id)
+    .filter(Boolean)
+  return produtoOptions.value.filter((opt) => !usedIds.includes(opt.value))
+}
 
 const lucroEstimado = computed(() =>
   items.value.reduce((sum, item) => {
@@ -73,7 +87,16 @@ const lucroEstimado = computed(() =>
 )
 
 function onSubmit() {
-  if (!cliente.value || items.value.length === 0) return
+  errors.cliente = ''
+  errors.itens = ''
+
+  if (!cliente.value.trim()) {
+    errors.cliente = 'Informe o nome do cliente.'
+  }
+  if (items.value.length === 0) {
+    errors.itens = 'Adicione pelo menos um item.'
+  }
+  if (errors.cliente || errors.itens) return
 
   emit('submit', {
     cliente: cliente.value,
