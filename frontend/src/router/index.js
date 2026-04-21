@@ -4,6 +4,7 @@ import DashboardView from '../views/DashboardView.vue'
 import ProdutosView from '../views/ProdutosView.vue'
 import ComprasView from '../views/ComprasView.vue'
 import VendasView from '../views/VendasView.vue'
+import RelatoriosView from '../views/RelatoriosView.vue'
 
 const routes = [
   { path: '/login', name: 'login', component: LoginView, meta: { guest: true } },
@@ -12,6 +13,7 @@ const routes = [
   { path: '/produtos', name: 'produtos', component: ProdutosView, meta: { auth: true } },
   { path: '/compras', name: 'compras', component: ComprasView, meta: { auth: true } },
   { path: '/vendas', name: 'vendas', component: VendasView, meta: { auth: true } },
+  { path: '/relatorios', name: 'relatorios', component: RelatoriosView, meta: { auth: true } },
 ]
 
 const router = createRouter({
