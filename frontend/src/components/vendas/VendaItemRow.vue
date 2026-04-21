@@ -45,7 +45,7 @@ defineEmits(['remover'])
 function onProdutoChange(produtoId) {
   const produto = props.produtosMap[produtoId]
   if (produto) {
-    props.item.preco_unitario = produto.preco_venda
+    props.item.preco_unitario = produto.preco_venda ?? props.item.preco_unitario
   }
 }
 </script>

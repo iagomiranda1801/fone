@@ -9,13 +9,12 @@ class ProdutoResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $compraItens = $this->whenLoaded('compraItens');
         $menorPreco = null;
         $maiorPreco = null;
 
-        if ($compraItens && count($compraItens) > 0) {
-            $menorPreco = (float) $compraItens->min('preco_unitario');
-            $maiorPreco = (float) $compraItens->max('preco_unitario');
+        if ($this->relationLoaded('compraItens') && $this->compraItens->count() > 0) {
+            $menorPreco = (float) $this->compraItens->min('preco_unitario');
+            $maiorPreco = (float) $this->compraItens->max('preco_unitario');
         }
 
         return [
