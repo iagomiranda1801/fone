@@ -106,7 +106,7 @@ class DashboardController extends Controller
         // Margem de lucro média
         $margemLucro = $faturamento > 0 ? ($lucroTotal / $faturamento) * 100 : 0;
 
-        return response()->json([
+        return [
             'resumo' => [
                 'total_produtos' => $totalProdutos,
                 'produtos_ativos' => $produtosAtivos,
