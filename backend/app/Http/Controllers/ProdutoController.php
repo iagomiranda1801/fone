@@ -12,7 +12,7 @@ class ProdutoController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return ProdutoResource::collection(Produto::with('compraItens')->get());
+        return ProdutoResource::collection(Produto::orderBy('nome')->get());
     }
 
     public function store(StoreProdutoRequest $request): ProdutoResource

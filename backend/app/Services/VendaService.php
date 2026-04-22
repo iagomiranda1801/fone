@@ -6,6 +6,7 @@ use App\Models\Produto;
 use App\Models\Venda;
 use App\Services\Contracts\EstoqueServiceInterface;
 use App\Services\Contracts\VendaServiceInterface;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class VendaService implements VendaServiceInterface
@@ -45,6 +46,8 @@ class VendaService implements VendaServiceInterface
                 'lucro' => round($lucro, 2),
             ]);
 
+            Cache::forget('dashboard_data');
+
             return $venda->load('itens.produto');
         });
     }
@@ -61,6 +64,8 @@ class VendaService implements VendaServiceInterface
             }
 
             $venda->update(['cancelada' => true]);
+
+            Cache::forget('dashboard_data');
 
             return $venda->fresh('itens.produto');
         });

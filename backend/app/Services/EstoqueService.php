@@ -10,6 +10,8 @@ class EstoqueService implements EstoqueServiceInterface
 {
     public function registrarEntrada(Produto $produto, int $quantidade, float $precoUnitario): void
     {
+        $produto = Produto::lockForUpdate()->find($produto->id);
+
         $custoTotal = ($produto->custo_medio * $produto->estoque) + ($precoUnitario * $quantidade);
         $novoEstoque = $produto->estoque + $quantidade;
 

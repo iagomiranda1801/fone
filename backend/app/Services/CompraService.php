@@ -6,6 +6,7 @@ use App\Models\Compra;
 use App\Models\Produto;
 use App\Services\Contracts\CompraServiceInterface;
 use App\Services\Contracts\EstoqueServiceInterface;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CompraService implements CompraServiceInterface
@@ -31,6 +32,8 @@ class CompraService implements CompraServiceInterface
                 $produto = Produto::findOrFail($item['id']);
                 $this->estoqueService->registrarEntrada($produto, $item['quantidade'], $item['preco_unitario']);
             }
+
+            Cache::forget('dashboard_data');
 
             return $compra->load('itens.produto');
         });

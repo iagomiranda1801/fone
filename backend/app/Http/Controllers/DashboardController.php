@@ -8,11 +8,21 @@ use App\Models\Produto;
 use App\Models\Venda;
 use App\Models\VendaItem;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index(): JsonResponse
+    {
+        $data = Cache::remember('dashboard_data', 60, function () {
+            return $this->buildDashboard();
+        });
+
+        return response()->json($data);
+    }
+
+    private function buildDashboard(): array
     {
         $totalProdutos = Produto::count();
         $produtosAtivos = Produto::where('ativo', true)->count();
@@ -133,6 +143,6 @@ class DashboardController extends Controller
                 'itens_count' => $c->itens->count(),
                 'created_at' => $c->created_at,
             ]),
-        ]);
+        ];
     }
 }

@@ -71,12 +71,14 @@
           </button>
           <button @click="limparFiltros('vendas')" class="btn-secondary">Limpar</button>
           <div class="ml-auto flex items-center gap-2" v-if="vendas.data.length > 0">
-            <button @click="exportarVendasExcel" class="btn-excel">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <button @click="exportarVendasExcel" :disabled="exportingVendasExcel" class="btn-excel">
+              <svg v-if="exportingVendasExcel" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               Excel
             </button>
-            <button @click="exportarVendasPDF" class="btn-pdf">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            <button @click="exportarVendasPDF" :disabled="exportingVendasPDF" class="btn-pdf">
+              <svg v-if="exportingVendasPDF" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
               PDF
             </button>
           </div>
@@ -99,7 +101,12 @@
         :loading="loadingVendas"
         empty-message="Nenhuma venda encontrada com os filtros selecionados."
       >
-        <template #row="{ row }">
+      <!-- error banner -->
+      <div v-if="errorVendas" class="flex items-center gap-3 p-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+        {{ errorVendas }}
+        <button @click="errorVendas = ''" class="ml-auto text-red-400 hover:text-red-600">✕</button>
+      </div>        <template #row="{ row }">
           <td class="px-4 py-3 text-sm text-gray-500 font-mono">#{{ row.id }}</td>
           <td class="px-4 py-3 text-sm font-semibold text-gray-800">{{ row.cliente }}</td>
           <td class="px-4 py-3 text-sm text-center">
@@ -154,12 +161,14 @@
           </button>
           <button @click="limparFiltros('compras')" class="btn-secondary">Limpar</button>
           <div class="ml-auto flex items-center gap-2" v-if="compras.data.length > 0">
-            <button @click="exportarComprasExcel" class="btn-excel">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <button @click="exportarComprasExcel" :disabled="exportingComprasExcel" class="btn-excel">
+              <svg v-if="exportingComprasExcel" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               Excel
             </button>
-            <button @click="exportarComprasPDF" class="btn-pdf">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            <button @click="exportarComprasPDF" :disabled="exportingComprasPDF" class="btn-pdf">
+              <svg v-if="exportingComprasPDF" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
               PDF
             </button>
           </div>
@@ -227,12 +236,14 @@
           </button>
           <button @click="limparFiltros('estoque')" class="btn-secondary">Limpar</button>
           <div class="ml-auto flex items-center gap-2" v-if="estoque.data.length > 0">
-            <button @click="exportarEstoqueExcel" class="btn-excel">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <button @click="exportarEstoqueExcel" :disabled="exportingEstoqueExcel" class="btn-excel">
+              <svg v-if="exportingEstoqueExcel" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               Excel
             </button>
-            <button @click="exportarEstoquePDF" class="btn-pdf">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            <button @click="exportarEstoquePDF" :disabled="exportingEstoquePDF" class="btn-pdf">
+              <svg v-if="exportingEstoquePDF" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
               PDF
             </button>
           </div>
@@ -307,12 +318,14 @@
           </button>
           <button @click="limparFiltros('lucratividade')" class="btn-secondary">Limpar</button>
           <div class="ml-auto flex items-center gap-2" v-if="lucratividade.data.length > 0">
-            <button @click="exportarLucratividadeExcel" class="btn-excel">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <button @click="exportarLucratividadeExcel" :disabled="exportingLucratividadeExcel" class="btn-excel">
+              <svg v-if="exportingLucratividadeExcel" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               Excel
             </button>
-            <button @click="exportarLucratividadePDF" class="btn-pdf">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            <button @click="exportarLucratividadePDF" :disabled="exportingLucratividadePDF" class="btn-pdf">
+              <svg v-if="exportingLucratividadePDF" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
               PDF
             </button>
           </div>
@@ -412,6 +425,21 @@ const buscouCompras       = ref(false)
 const buscouEstoque       = ref(false)
 const buscouLucratividade = ref(false)
 
+const errorVendas        = ref('')
+const errorCompras       = ref('')
+const errorEstoque       = ref('')
+const errorLucratividade = ref('')
+
+// Export loading
+const exportingVendasExcel        = ref(false)
+const exportingVendasPDF          = ref(false)
+const exportingComprasExcel       = ref(false)
+const exportingComprasPDF         = ref(false)
+const exportingEstoqueExcel       = ref(false)
+const exportingEstoquePDF         = ref(false)
+const exportingLucratividadeExcel = ref(false)
+const exportingLucratividadePDF   = ref(false)
+
 // ─── filters ─────────────────────────────────────────────────────────────────
 const filtrosVendas = reactive({ data_inicio: '', data_fim: '', cliente: '', produto_id: '', status: '' })
 const filtrosCompras = reactive({ data_inicio: '', data_fim: '', fornecedor: '', produto_id: '' })
@@ -435,11 +463,14 @@ function limparFiltros(tipo) {
 // ─── fetch ───────────────────────────────────────────────────────────────────
 async function buscarVendas() {
   loadingVendas.value = true
+  errorVendas.value = ''
   try {
     const { data } = await getRelatorioVendas(filtrosAtivos(filtrosVendas))
     vendas.data = data.data
     vendas.totalizadores = data.totalizadores
     buscouVendas.value = true
+  } catch (e) {
+    errorVendas.value = e?.message || 'Erro ao carregar vendas.'
   } finally {
     loadingVendas.value = false
   }
@@ -447,11 +478,14 @@ async function buscarVendas() {
 
 async function buscarCompras() {
   loadingCompras.value = true
+  errorCompras.value = ''
   try {
     const { data } = await getRelatorioCompras(filtrosAtivos(filtrosCompras))
     compras.data = data.data
     compras.totalizadores = data.totalizadores
     buscouCompras.value = true
+  } catch (e) {
+    errorCompras.value = e?.message || 'Erro ao carregar compras.'
   } finally {
     loadingCompras.value = false
   }
@@ -459,11 +493,14 @@ async function buscarCompras() {
 
 async function buscarEstoque() {
   loadingEstoque.value = true
+  errorEstoque.value = ''
   try {
     const { data } = await getRelatorioEstoque(filtrosAtivos(filtrosEstoque))
     estoque.data = data.data
     estoque.totalizadores = data.totalizadores
     buscouEstoque.value = true
+  } catch (e) {
+    errorEstoque.value = e?.message || 'Erro ao carregar estoque.'
   } finally {
     loadingEstoque.value = false
   }
@@ -471,11 +508,14 @@ async function buscarEstoque() {
 
 async function buscarLucratividade() {
   loadingLucratividade.value = true
+  errorLucratividade.value = ''
   try {
     const { data } = await getRelatorioLucratividade(filtrosAtivos(filtrosLucratividade))
     lucratividade.data = data.data
     lucratividade.totalizadores = data.totalizadores
     buscouLucratividade.value = true
+  } catch (e) {
+    errorLucratividade.value = e?.message || 'Erro ao carregar lucratividade.'
   } finally {
     loadingLucratividade.value = false
   }
@@ -486,14 +526,38 @@ function filtrosAtivos(obj) {
 }
 
 // ─── exports ─────────────────────────────────────────────────────────────────
-function exportarVendasExcel()        { exportVendasExcel(vendas.data, vendas.totalizadores) }
-function exportarVendasPDF()          { exportVendasPDF(vendas.data, vendas.totalizadores, filtrosAtivosStr(filtrosVendas)) }
-function exportarComprasExcel()       { exportComprasExcel(compras.data, compras.totalizadores) }
-function exportarComprasPDF()         { exportComprasPDF(compras.data, compras.totalizadores, filtrosAtivosStr(filtrosCompras)) }
-function exportarEstoqueExcel()       { exportEstoqueExcel(estoque.data, estoque.totalizadores) }
-function exportarEstoquePDF()         { exportEstoquePDF(estoque.data, estoque.totalizadores, filtrosAtivosStr(filtrosEstoque)) }
-function exportarLucratividadeExcel() { exportLucratividadeExcel(lucratividade.data, lucratividade.totalizadores) }
-function exportarLucratividadePDF()   { exportLucratividadePDF(lucratividade.data, lucratividade.totalizadores, filtrosAtivosStr(filtrosLucratividade)) }
+async function exportarVendasExcel() {
+  exportingVendasExcel.value = true
+  try { exportVendasExcel(vendas.data, vendas.totalizadores) } finally { exportingVendasExcel.value = false }
+}
+async function exportarVendasPDF() {
+  exportingVendasPDF.value = true
+  try { exportVendasPDF(vendas.data, vendas.totalizadores, filtrosAtivosStr(filtrosVendas)) } finally { exportingVendasPDF.value = false }
+}
+async function exportarComprasExcel() {
+  exportingComprasExcel.value = true
+  try { exportComprasExcel(compras.data, compras.totalizadores) } finally { exportingComprasExcel.value = false }
+}
+async function exportarComprasPDF() {
+  exportingComprasPDF.value = true
+  try { exportComprasPDF(compras.data, compras.totalizadores, filtrosAtivosStr(filtrosCompras)) } finally { exportingComprasPDF.value = false }
+}
+async function exportarEstoqueExcel() {
+  exportingEstoqueExcel.value = true
+  try { exportEstoqueExcel(estoque.data, estoque.totalizadores) } finally { exportingEstoqueExcel.value = false }
+}
+async function exportarEstoquePDF() {
+  exportingEstoquePDF.value = true
+  try { exportEstoquePDF(estoque.data, estoque.totalizadores, filtrosAtivosStr(filtrosEstoque)) } finally { exportingEstoquePDF.value = false }
+}
+async function exportarLucratividadeExcel() {
+  exportingLucratividadeExcel.value = true
+  try { exportLucratividadeExcel(lucratividade.data, lucratividade.totalizadores) } finally { exportingLucratividadeExcel.value = false }
+}
+async function exportarLucratividadePDF() {
+  exportingLucratividadePDF.value = true
+  try { exportLucratividadePDF(lucratividade.data, lucratividade.totalizadores, filtrosAtivosStr(filtrosLucratividade)) } finally { exportingLucratividadePDF.value = false }
+}
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 function money(val) {
@@ -501,8 +565,12 @@ function money(val) {
 }
 
 onMounted(async () => {
-  const { data } = await getProdutosLista()
-  produtosLista.value = data
+  try {
+    const { data } = await getProdutosLista()
+    produtosLista.value = data
+  } catch {
+    // Non-critical: product list for filters, continues without it
+  }
   // Load defaults
   await Promise.all([buscarVendas(), buscarEstoque()])
 })

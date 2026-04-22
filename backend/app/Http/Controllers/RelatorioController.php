@@ -32,7 +32,7 @@ class RelatorioController extends Controller
             $query->whereHas('itens', fn($q) => $q->where('produto_id', $request->produto_id));
         }
 
-        $vendas = $query->get();
+        $vendas = $query->limit(1000)->get();
 
         $rows = $vendas->map(fn($v) => [
             'id'          => $v->id,
@@ -78,7 +78,7 @@ class RelatorioController extends Controller
             $query->whereHas('itens', fn($q) => $q->where('produto_id', $request->produto_id));
         }
 
-        $compras = $query->get();
+        $compras = $query->limit(1000)->get();
 
         $rows = $compras->map(fn($c) => [
             'id'         => $c->id,
@@ -103,18 +103,19 @@ class RelatorioController extends Controller
 
     public function estoque(Request $request): JsonResponse
     {
-        $query = Produto::with('compraItens');
+        $query = Produto::query();
 
         if ($request->filled('status')) {
             $query->where('ativo', $request->status === 'ativo');
         }
         if ($request->filled('estoque_nivel')) {
-            match ($request->estoque_nivel) {
-                'zerado' => $query->where('estoque', 0),
-                'baixo'  => $query->where('estoque', '>', 0)->where('estoque', '<=', 5),
-                'normal' => $query->where('estoque', '>', 5),
-                default  => null,
-            };
+            if ($request->estoque_nivel === 'zerado') {
+                $query->where('estoque', 0);
+            } elseif ($request->estoque_nivel === 'baixo') {
+                $query->where('estoque', '>', 0)->where('estoque', '<=', 5);
+            } elseif ($request->estoque_nivel === 'normal') {
+                $query->where('estoque', '>', 5);
+            }
         }
         if ($request->filled('nome')) {
             $query->where('nome', 'like', '%' . $request->nome . '%');
