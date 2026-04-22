@@ -8,7 +8,7 @@ Sistema ERP de gestão de estoque desenvolvido com **Laravel 13 + Vue 3 + MySQL 
 
 | Camada     | Tecnologia                       |
 |------------|----------------------------------|
-| Backend    | PHP 8.3 · Laravel 11 · Sanctum   |
+| Backend    | PHP 8.3 · Laravel 13 · Sanctum   |
 | Frontend   | Vue 3 · Vite · Tailwind CSS 3    |
 | Banco      | MySQL 8.0                        |
 | Auth       | Laravel Sanctum (Bearer Token)   |
