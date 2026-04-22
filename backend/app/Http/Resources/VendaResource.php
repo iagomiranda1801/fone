@@ -14,7 +14,7 @@ class VendaResource extends JsonResource
             'cliente' => $this->cliente,
             'total' => (float) $this->total,
             'lucro' => (float) $this->lucro,
-            'cancelada' => $this->cancelada,
+            'cancelada' => (bool) $this->cancelada,
             'itens' => VendaItemResource::collection($this->whenLoaded('itens')),
             'created_at' => $this->created_at,
         ];

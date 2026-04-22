@@ -20,10 +20,15 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      const hadToken = !!localStorage.getItem('token')
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      window.location.href = '/login'
-      return Promise.reject({ message: 'Sessão expirada. Faça login novamente.', status: 401 })
+      // Só redireciona se havia uma sessão ativa (token expirado/inválido)
+      // Não redireciona em falha de login (sem token prévio)
+      if (hadToken) {
+        window.location.href = '/login'
+      }
+      return Promise.reject({ message: 'Credenciais inválidas ou sessão expirada.', status: 401 })
     }
 
     // Laravel validation errors (422) come as { errors: { field: ['msg'] } }
