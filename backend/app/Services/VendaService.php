@@ -69,5 +69,10 @@ class VendaService implements VendaServiceInterface
 
             return $venda->fresh('itens.produto');
         });
+    } 
+
+    public function show(Venda $venda): Venda
+    {
+        return $venda->load('itens.produto');
     }
 }
